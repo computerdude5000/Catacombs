@@ -38,7 +38,7 @@ public class CatMob {
   private String name;
   private HateTable hate;
   private int max_hps;
-  private int hps;
+  private double hps;
   private int exp;
   private int cash;
   private int level;
@@ -138,7 +138,7 @@ public class CatMob {
 //    this.targets = targets;
 //  }
   
-  public Boolean hit(LivingEntity attacker,int dmg,int threat) {
+  public Boolean hit(LivingEntity attacker,double dmg,double threat) {
     if(attacker instanceof Player) {
       hate.addThreat(attacker, threat);
       ((Creature)ent).setTarget((LivingEntity)hate.target());
@@ -150,7 +150,7 @@ public class CatMob {
     didHit = Calendar.getInstance().getTimeInMillis();
   }
   
-  public Boolean hit(int dmg) {
+  public Boolean hit(double dmg) {
     gotHit = Calendar.getInstance().getTimeInMillis();
     hps = hps - dmg;
     if(hps<=0) {
@@ -179,7 +179,7 @@ public class CatMob {
     hps = max_hps;
   }
   
-  public int getHealth() {
+  public double getHealth() {
     return 100*hps/max_hps;
   }  
   

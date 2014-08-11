@@ -283,7 +283,9 @@ public class CatUtils {
       EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) evt;
       damager = e.getDamager();
       if (damager instanceof Projectile) {
-        damager = ((Projectile) damager).getShooter();
+        damager = (Entity) ((Projectile) damager).getShooter();
+          //TODO remove this
+          System.out.println("LivingEntity getDamager on CatUtils");
       }
     }
     if(damager instanceof LivingEntity) {
@@ -331,9 +333,9 @@ public class CatUtils {
     }
   }
   
-  public static int getThreatFixDurability(Player player, int dmg) {
+  public static double getThreatFixDurability(Player player, double dmg) {
     ItemStack stk = player.getItemInHand();
-    int threat = dmg;
+    double threat = dmg;
     if(stk==null)
       return threat;
     

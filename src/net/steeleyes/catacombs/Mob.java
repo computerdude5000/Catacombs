@@ -27,7 +27,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 public class Mob {
   private LivingEntity ent;
   private MobType type=null;
-  private int hps;
+  private double hps;
   Boolean notify = false;
   
   private long gotHit=0;
@@ -60,7 +60,7 @@ public class Mob {
     //System.out.println("[Catacombs] "+type.getName()+" dmg="+evt.getDamage()+" hps="+hps);
     evt.setDamage(1);
     if(hps<=0) {
-      ent.setHealth(1); 
+      ent.setHealth(1);
     } else {
       ent.setHealth(ent.getMaxHealth());
     }

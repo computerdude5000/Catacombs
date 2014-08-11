@@ -40,7 +40,7 @@ public class HateTable {
   
   private LivingEntity self;  // Needed for distance checks
   private LivingEntity aggro = null;
-  private final Map<LivingEntity, Integer> threats = new HashMap<LivingEntity, Integer>();
+  private final Map<LivingEntity, Double> threats = new HashMap<LivingEntity, Double>();
   private String name;
 
   public HateTable(CatConfig cnf,LivingEntity self,String name) {
@@ -52,8 +52,8 @@ public class HateTable {
   @Override
   public String toString() {
     String str = "HateTable:";
-    for(Entry<LivingEntity,Integer> e : CatUtils.sortByValue(threats)) {
-      int threat = e.getValue();
+    for(Entry<LivingEntity,Double> e : CatUtils.sortByValue(threats)) {
+      double threat = e.getValue();
       LivingEntity ent = e.getKey();
       String x = (ent instanceof Player)?((Player)ent).getName():ent.toString();
       str += x+"("+threat+") ";
@@ -62,8 +62,8 @@ public class HateTable {
   }
 
   // Player hits this target and causes a given threat
-  public void addThreat(LivingEntity ent, int val) {
-    int threat = (threats.containsKey(ent)) ? threats.get(ent) + val : val;
+  public void addThreat(LivingEntity ent, double val) {
+    double threat = (threats.containsKey(ent)) ? threats.get(ent) + val : val;
     threats.put(ent, threat);
     updateThreat();
   }
@@ -71,7 +71,7 @@ public class HateTable {
   // Player does a drop aggro operation
   public Boolean zeroThreat(LivingEntity ent) {
     if (threats.containsKey(ent)) {
-      threats.put(ent, 0);
+      threats.put(ent, 0.0);
       if (aggro != null && ent.equals(aggro)) {
         updateTarget();
       }
@@ -97,9 +97,9 @@ public class HateTable {
     if(ent == null || aggro == null || aggro.equals(ent))
       return false;
     
-    Integer curr = threats.get(aggro);
+    Double curr = threats.get(aggro);
     if(curr==null) {
-      curr = -1;  
+      curr = -1.0;
     }
     threats.put(ent, curr);
     aggro = ent;
@@ -129,15 +129,15 @@ public class HateTable {
     return threats.keySet();
   }
 
-  private Entry<LivingEntity, Integer> highest() {
-    Entry<LivingEntity, Integer> hi = null;
+  private Entry<LivingEntity, Double> highest() {
+    Entry<LivingEntity, Double> hi = null;
     if (!threats.isEmpty()) {
       Location sloc = self.getLocation();
-      int max = -1;
+      double max = -1;
 
-      Iterator<Map.Entry<LivingEntity, Integer>> it = threats.entrySet().iterator();
+      Iterator<Map.Entry<LivingEntity, Double>> it = threats.entrySet().iterator();
       while (it.hasNext()) {
-        Entry<LivingEntity, Integer> e = it.next();
+        Entry<LivingEntity, Double> e = it.next();
 
         Entity ent = e.getKey();
         Location eloc = ent.getLocation();
@@ -150,7 +150,7 @@ public class HateTable {
           }
           it.remove(); // attacker is out of range (no exp/loot for them)
         } else {
-          int threat = e.getValue();
+          double threat = e.getValue();
           if (threat > max) {
             max = threat;
             hi = e;
@@ -162,7 +162,7 @@ public class HateTable {
   }
 
   private void updateThreat() {
-    Entry<LivingEntity, Integer> hi = highest();
+    Entry<LivingEntity, Double> hi = highest();
     if (hi == null) {
       // Target dropped and nobody to switch to
       aggro = null;
@@ -188,8 +188,8 @@ public class HateTable {
       if(aggro == null) {
         System.err.println("[Catacombs] aggro is null "+this);
       }
-      int max = hi.getValue();
-      int curr = (threats.containsKey(aggro))?threats.get(aggro):-1;
+      double max = hi.getValue();
+      double curr = (threats.containsKey(aggro))?threats.get(aggro):-1;
       if (curr == -1 || (double)max > ((double)curr) * PULL_THREAT) {  // Pull aggro
         aggro = max_who;
         if(aggro instanceof Player) {
